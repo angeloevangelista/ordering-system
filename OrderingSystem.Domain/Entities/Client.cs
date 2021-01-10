@@ -1,17 +1,37 @@
 using System.Linq;
 using System.Collections.Generic;
 using OrderingSystem.Shared.Entities;
+using Flunt.Validations;
+
 namespace OrderingSystem.Domain.Entities
 {
   public class Client : Entity
   {
+    private readonly Contract _nameContract, _emailContract, _passwordContract;
     private readonly IList<Order> _orders;
     private readonly IList<Product> _products;
 
-    public Client() : base()
+    private Client() : base()
     {
-      this._orders = new List<Order>();
-      this._products = new List<Product>();
+      _nameContract = new Contract()
+        .Requires()
+        .HasMinLen(
+          Name,
+          3,
+          "Client.Name",
+          "O nome deve ter no mínimo 3 caracteres."
+        );
+
+      _emailContract = new Contract().Requires()
+        .IsEmail(Email, "Client.Email", "E-mail inválido.");
+
+      _passwordContract = new Contract().Requires()
+        .HasMinLen(
+          Password,
+          6,
+          "Client.Password",
+          "A senha deve conter no mínimo 3 caracteres."
+        );
     }
 
     public Client(
@@ -20,10 +40,19 @@ namespace OrderingSystem.Domain.Entities
       string password,
       string telephone) : this()
     {
+      _orders = new List<Order>();
+      _products = new List<Product>();
+
       Name = name;
       Email = email;
       Telephone = telephone;
       Password = BCrypt.Net.BCrypt.HashPassword(password, 8);
+
+      AddNotifications(new Contract().Requires().Join(
+        _nameContract,
+        _emailContract,
+        _passwordContract)
+      );
     }
 
     public string Name { get; private set; }
@@ -33,30 +62,14 @@ namespace OrderingSystem.Domain.Entities
     public IReadOnlyCollection<Order> Orders { get => _orders.ToArray(); }
     public IReadOnlyCollection<Product> Products { get => _products.ToArray(); }
 
-    public Client SetName(string name)
-    {
-      SetUpdatedAt();
-
-      Name = name;
-
-      return this;
-    }
-
-    public Client SetEmail(string email)
-    {
-      SetUpdatedAt();
-
-      Email = email;
-
-      return this;
-    }
-
     public Client SetPassword(string password)
     {
       SetUpdatedAt();
 
-      if (CheckPassword(password))
-        Password = password;
+      if (!CheckPassword(password))
+        AddNotification("Client.Password", "As senhas não combinam.");
+
+      Password = BCrypt.Net.BCrypt.HashPassword(password, 8);
 
       return this;
     }
@@ -64,7 +77,6 @@ namespace OrderingSystem.Domain.Entities
     public Client SetTelephone(string telephone)
     {
       SetUpdatedAt();
-      
       Telephone = telephone;
 
       return this;
@@ -73,7 +85,8 @@ namespace OrderingSystem.Domain.Entities
     public Client AddOrder(Order order)
     {
       SetUpdatedAt();
-      
+      AddNotifications(order);
+
       _orders.Add(order);
 
       return this;
@@ -92,7 +105,8 @@ namespace OrderingSystem.Domain.Entities
     public Client AddProduct(Product product)
     {
       SetUpdatedAt();
-      
+      AddNotifications(product);
+
       _products.Add(product);
 
       return this;

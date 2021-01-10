@@ -1,15 +1,43 @@
 using System;
+using Flunt.Validations;
 using OrderingSystem.Shared.Entities;
 
 namespace OrderingSystem.Domain.Entities
 {
   public class Product : Entity
   {
-    public Product(string name, decimal price, Client client) : base()
+    private readonly Contract _nameContract, _priceContract;
+
+    private Product() : base()
+    {
+      _nameContract = new Contract()
+        .Requires()
+        .HasMinLen(
+          Name,
+          3,
+          "Product.Name",
+          "O nome deve ter no mínimo 3 caracteres.");
+
+      _priceContract = new Contract()
+        .Requires()
+        .IsGreaterThan(
+          Price,
+          0,
+          "Product.Price",
+          "O preço deve ser maior do que zero."
+        );
+    }
+
+    public Product(string name, decimal price, Client client) : this()
     {
       Name = name;
       Price = price;
       Client = client;
+
+      AddNotifications(client, new Contract().Requires().Join(
+        _nameContract,
+        _priceContract
+      ));
     }
 
     public string Name { get; private set; }
@@ -21,6 +49,7 @@ namespace OrderingSystem.Domain.Entities
       SetUpdatedAt();
       Name = name;
 
+      AddNotifications(_nameContract);
       return this;
     }
     public Product SetPrice(decimal price)
@@ -28,6 +57,7 @@ namespace OrderingSystem.Domain.Entities
       SetUpdatedAt();
       Price = price;
 
+      AddNotifications(_priceContract);
       return this;
     }
     public Product SetClient(Client client)
