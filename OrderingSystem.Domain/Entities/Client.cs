@@ -59,8 +59,8 @@ namespace OrderingSystem.Domain.Entities
     public string Email { get; private set; }
     public string Password { get; private set; }
     public string Telephone { get; private set; }
-    public IReadOnlyCollection<Order> Orders { get => _orders.ToArray(); }
-    public IReadOnlyCollection<Product> Products { get => _products.ToArray(); }
+    public IEnumerable<Order> Orders { get => _orders.ToArray(); }
+    public IEnumerable<Product> Products { get => _products.ToArray(); }
 
     public Client SetPassword(string password)
     {

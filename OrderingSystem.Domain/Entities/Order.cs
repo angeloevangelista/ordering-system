@@ -48,7 +48,9 @@ namespace OrderingSystem.Domain.Entities
       ));
     }
 
+    public Guid ClientId { get; private set; }
     public Client Client { get; private set; }
+    public Guid ProductId { get; private set; }
     public Product Product { get; private set; }
     public int Amount { get; private set; }
     public decimal Discount { get; private set; }

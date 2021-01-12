@@ -42,6 +42,7 @@ namespace OrderingSystem.Domain.Entities
 
     public string Name { get; private set; }
     public decimal Price { get; private set; }
+    public Guid ClientId { get; private set; }
     public Client Client { get; private set; }
 
     public Product SetName(string name)
