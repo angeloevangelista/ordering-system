@@ -30,7 +30,10 @@ namespace OrderingSystem.Api
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddDbContext<OrderingDataContext>(options =>
-        options.UseSqlite("Data Source=database.sqlite")
+        options.UseNpgsql(
+          Configuration.GetConnectionString("Postgres"),
+          action => action.MigrationsAssembly("OrderingSystem.Api")
+        )
       );
 
       services.AddScoped<OrderingDataContext, OrderingDataContext>();
