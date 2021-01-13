@@ -6,16 +6,11 @@ namespace OrderingSystem.Data.Context
 {
   public class OrderingDataContext : DbContext
   {
-    public OrderingDataContext() : base()
-    {
-    }
-
     public OrderingDataContext(DbContextOptions<OrderingDataContext> options)
       : base(options)
     {
     }
-
-
+      
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       modelBuilder.Ignore<Notification>();
