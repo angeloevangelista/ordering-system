@@ -13,6 +13,9 @@ namespace OrderingSystem.Domain.Entities
 
     private Client() : base()
     {
+      _orders = new List<Order>();
+      _products = new List<Product>();
+
       _nameContract = new Contract()
         .Requires()
         .HasMinLen(
@@ -40,9 +43,6 @@ namespace OrderingSystem.Domain.Entities
       string password,
       string telephone) : this()
     {
-      _orders = new List<Order>();
-      _products = new List<Product>();
-
       Name = name;
       Email = email;
       Telephone = telephone;
