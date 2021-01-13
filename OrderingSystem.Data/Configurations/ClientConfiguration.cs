@@ -12,26 +12,38 @@ namespace OrderingSystem.Data.Configurations
       builder.ToTable("clients");
       builder.HasKey(pre => pre.Id).HasName("pk_clients");
 
+      builder.Property(pre => pre.Id)
+        .HasColumnName("id");
+
       builder.Property(pre => pre.Name)
         .HasColumnName("name")
+        .HasColumnType("VARCHAR(255)")
         .IsRequired();
 
       builder.Property(pre => pre.Email)
         .HasColumnName("email")
+        .HasColumnType("VARCHAR(255)")
         .IsRequired();
 
       builder.Property(pre => pre.Password)
         .HasColumnName("password")
+        .HasColumnType("VARCHAR(255)")
         .IsRequired();
 
       builder.Property(pre => pre.Telephone)
         .HasColumnName("telephone")
+        .HasColumnType("VARCHAR(50)")
         .IsRequired();
 
+      builder.Property(pre => pre.Active)
+        .HasColumnName("active");
+
       builder.Property(pre => pre.CreatedAt)
+        .HasColumnName("created_at")
         .IsRequired();
 
       builder.Property(pre => pre.UpdatedAt)
+        .HasColumnName("updated_at")
         .IsRequired();
 
       builder

@@ -12,6 +12,9 @@ namespace OrderingSystem.Data.Configurations
       builder.ToTable("orders");
       builder.HasKey(pre => pre.Id).HasName("pk_orders");
 
+      builder.Property(pre => pre.Id)
+        .HasColumnName("id");
+
       builder.Property(pre => pre.Amount)
         .HasColumnName("amount")
         .IsRequired();
@@ -25,10 +28,15 @@ namespace OrderingSystem.Data.Configurations
         .HasColumnName("canceled_at")
         .IsRequired(false);
 
+      builder.Property(pre => pre.Active)
+        .HasColumnName("active");
+
       builder.Property(pre => pre.CreatedAt)
+        .HasColumnName("created_at")
         .IsRequired();
 
       builder.Property(pre => pre.UpdatedAt)
+        .HasColumnName("updated_at")
         .IsRequired();
 
       builder.Property(pre => pre.ClientId)
