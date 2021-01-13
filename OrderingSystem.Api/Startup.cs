@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using OrderingSystem.Api.Extensions;
+using OrderingSystem.Api.Middlewares;
 using OrderingSystem.Data.Context;
 using OrderingSystem.Data.Repositories;
 using OrderingSystem.Domain.Interfaces;
@@ -29,6 +31,8 @@ namespace OrderingSystem.Api
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      services.AddGlobalExceptionHandlerMiddleware();
+
       services.AddDbContext<OrderingDataContext>(options =>
         options.UseNpgsql(
           Configuration.GetConnectionString("Postgres"),
@@ -55,6 +59,8 @@ namespace OrderingSystem.Api
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "OrderingSystem.Api v1"));
       }
+      
+      app.UseGlobalExceptionHandlerMiddleware();
 
       app.UseRouting();
 
