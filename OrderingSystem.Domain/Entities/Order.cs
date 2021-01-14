@@ -6,27 +6,8 @@ namespace OrderingSystem.Domain.Entities
 {
   public class Order : Entity
   {
-    private readonly Contract _amountContract, _discountContract;
-
     private Order() : base()
     {
-      _amountContract = new Contract()
-        .Requires()
-        .IsGreaterThan(
-          Amount,
-          0,
-          "Order.Amount",
-          "A quantidade deve ser maior do que zero."
-        );
-
-      _discountContract = new Contract()
-        .Requires()
-        .IsGreaterOrEqualsThan(
-          Discount,
-          0,
-          "Order.Discount",
-          "O desconto deve ser maior ou igual a zero."
-        );
     }
 
     public Order(
@@ -42,10 +23,21 @@ namespace OrderingSystem.Domain.Entities
       Discount = discount;
       CanceledAt = null;
 
-      AddNotifications(client, product, new Contract().Requires().Join(
-        _amountContract,
-        _discountContract
-      ));
+      AddNotifications(client, product, new Contract()
+        .Requires()
+        .IsGreaterThan(
+          Amount,
+          0,
+          "Order.Amount",
+          "A quantidade deve ser maior do que zero."
+        )
+        .IsGreaterOrEqualsThan(
+          Discount,
+          0,
+          "Order.Discount",
+          "O desconto deve ser maior ou igual a zero."
+        )
+      );
     }
 
     public Guid ClientId { get; private set; }
@@ -62,7 +54,14 @@ namespace OrderingSystem.Domain.Entities
 
       Amount = amount;
 
-      AddNotifications(_amountContract);
+      AddNotifications(new Contract()
+        .Requires()
+        .IsGreaterThan(
+          Amount,
+          0,
+          "Order.Amount",
+          "A quantidade deve ser maior do que zero."
+        ));
       return this;
     }
 
@@ -71,7 +70,15 @@ namespace OrderingSystem.Domain.Entities
       SetUpdatedAt();
       Discount = discount;
 
-      AddNotifications(_discountContract);
+      AddNotifications(new Contract()
+        .Requires()
+        .IsGreaterOrEqualsThan(
+          Discount,
+          0,
+          "Order.Discount",
+          "O desconto deve ser maior ou igual a zero."
+        )
+      );
       return this;
     }
   }

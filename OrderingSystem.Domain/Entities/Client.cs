@@ -7,7 +7,6 @@ namespace OrderingSystem.Domain.Entities
 {
   public class Client : Entity
   {
-    private readonly Contract _nameContract, _emailContract, _passwordContract;
     private readonly IList<Order> _orders;
     private readonly IList<Product> _products;
 
@@ -15,26 +14,6 @@ namespace OrderingSystem.Domain.Entities
     {
       _orders = new List<Order>();
       _products = new List<Product>();
-
-      _nameContract = new Contract()
-        .Requires()
-        .HasMinLen(
-          Name,
-          3,
-          "Client.Name",
-          "O nome deve ter no mínimo 3 caracteres."
-        );
-
-      _emailContract = new Contract().Requires()
-        .IsEmail(Email, "Client.Email", "E-mail inválido.");
-
-      _passwordContract = new Contract().Requires()
-        .HasMinLen(
-          Password,
-          6,
-          "Client.Password",
-          "A senha deve conter no mínimo 3 caracteres."
-        );
     }
 
     public Client(
@@ -48,10 +27,21 @@ namespace OrderingSystem.Domain.Entities
       Telephone = telephone;
       Password = BCrypt.Net.BCrypt.HashPassword(password, 8);
 
-      AddNotifications(new Contract().Requires().Join(
-        _nameContract,
-        _emailContract,
-        _passwordContract)
+      AddNotifications(new Contract()
+        .Requires()
+        .HasMinLen(
+          Name,
+          3,
+          "Client.Name",
+          "O nome deve ter no mínimo 3 caracteres."
+        )
+        .IsEmail(Email, "Client.Email", "E-mail inválido.")
+        .HasMinLen(
+          Password,
+          6,
+          "Client.Password",
+          "A senha deve conter no mínimo 6 caracteres."
+        )
       );
     }
 
@@ -62,14 +52,20 @@ namespace OrderingSystem.Domain.Entities
     public IEnumerable<Order> Orders { get => _orders.ToArray(); }
     public IEnumerable<Product> Products { get => _products.ToArray(); }
 
-    public Client SetPassword(string password)
+    public Client SetPassword(string oldPassword, string newPassword)
     {
       SetUpdatedAt();
 
-      if (!CheckPassword(password))
+      if (!CheckPassword(oldPassword))
         AddNotification("Client.Password", "As senhas não combinam.");
 
-      Password = BCrypt.Net.BCrypt.HashPassword(password, 8);
+      Password = BCrypt.Net.BCrypt.HashPassword(newPassword, 8);
+
+      if (newPassword.Length < 6)
+        AddNotification(
+          "Client.Password",
+          "A senha deve conter no mínimo 6 caracteres."
+        );
 
       return this;
     }

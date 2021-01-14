@@ -6,26 +6,8 @@ namespace OrderingSystem.Domain.Entities
 {
   public class Product : Entity
   {
-    private readonly Contract _nameContract, _priceContract;
-
     private Product() : base()
     {
-      _nameContract = new Contract()
-        .Requires()
-        .HasMinLen(
-          Name,
-          3,
-          "Product.Name",
-          "O nome deve ter no mínimo 3 caracteres.");
-
-      _priceContract = new Contract()
-        .Requires()
-        .IsGreaterThan(
-          Price,
-          0,
-          "Product.Price",
-          "O preço deve ser maior do que zero."
-        );
     }
 
     public Product(string name, decimal price, Client client) : this()
@@ -34,10 +16,21 @@ namespace OrderingSystem.Domain.Entities
       Price = price;
       Client = client;
 
-      AddNotifications(client, new Contract().Requires().Join(
-        _nameContract,
-        _priceContract
-      ));
+      AddNotifications(client, new Contract()
+        .Requires()
+        .HasMinLen(
+          Name,
+          3,
+          "Product.Name",
+          "O nome deve ter no mínimo 3 caracteres."
+        )
+        .IsGreaterThan(
+          Price,
+          0,
+          "Product.Price",
+          "O preço deve ser maior do que zero."
+        )
+      );
     }
 
     public string Name { get; private set; }
@@ -50,7 +43,15 @@ namespace OrderingSystem.Domain.Entities
       SetUpdatedAt();
       Name = name;
 
-      AddNotifications(_nameContract);
+      AddNotifications(new Contract()
+        .Requires()
+        .HasMinLen(
+          Name,
+          3,
+          "Product.Name",
+          "O nome deve ter no mínimo 3 caracteres."
+        )
+      );
       return this;
     }
     public Product SetPrice(decimal price)
@@ -58,7 +59,15 @@ namespace OrderingSystem.Domain.Entities
       SetUpdatedAt();
       Price = price;
 
-      AddNotifications(_priceContract);
+      AddNotifications(new Contract()
+        .Requires()
+        .IsGreaterThan(
+          Price,
+          0,
+          "Product.Price",
+          "O preço deve ser maior do que zero."
+        ));
+
       return this;
     }
     public Product SetClient(Client client)
