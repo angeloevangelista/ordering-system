@@ -7,5 +7,6 @@ namespace OrderingSystem.Domain.Interfaces
 {
   public interface IClientRepository : IRepository<Client>
   {
+    Task<Client> FindByEmail(string email);
   }
 }
