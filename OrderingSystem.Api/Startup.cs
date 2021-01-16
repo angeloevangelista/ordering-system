@@ -42,6 +42,7 @@ namespace OrderingSystem.Api
 
       services.AddScoped<OrderingDataContext, OrderingDataContext>();
       services.AddScoped<IClientRepository, ClientRepository>();
+      services.AddScoped<IProductRepository, ProductRepository>();
 
       services.AddControllers();
       services.AddSwaggerGen(c =>
