@@ -10,13 +10,13 @@ namespace OrderingSystem.Domain.Entities
     {
     }
 
-    public Product(string name, decimal price, Client client) : this()
+    public Product(string name, decimal price, Guid clientId) : this()
     {
       Name = name;
       Price = price;
-      Client = client;
+      ClientId = clientId;
 
-      AddNotifications(client, new Contract()
+      AddNotifications(new Contract()
         .Requires()
         .HasMinLen(
           Name,
