@@ -35,7 +35,6 @@ namespace OrderingSystem.Data.Repositories
 
       var client = await _context.Clients
         .AsNoTracking()
-        .Include(pre => pre.Orders)
         .FirstOrDefaultAsync(pre =>
           pre.Id.Equals(clientGuid)
           && pre.Active
@@ -62,7 +61,6 @@ namespace OrderingSystem.Data.Repositories
       var clients = await _context.Clients
         .AsNoTracking()
         .Where(pre => pre.Active)
-        .Include(pre => pre.Orders)
         .ToListAsync();
 
       return clients;
