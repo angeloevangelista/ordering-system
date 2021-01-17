@@ -11,19 +11,14 @@ namespace OrderingSystem.Domain.Entities
     }
 
     public Order(
-      Client client,
-      Product product,
       int amount,
-      decimal discount,
-      DateTime? canceledAt) : this()
+      decimal discount) : this()
     {
-      Client = client;
-      Product = product;
       Amount = amount;
       Discount = discount;
       CanceledAt = null;
 
-      AddNotifications(client, product, new Contract()
+      AddNotifications(new Contract()
         .Requires()
         .IsGreaterThan(
           Amount,
@@ -48,6 +43,43 @@ namespace OrderingSystem.Domain.Entities
     public decimal Discount { get; private set; }
     public DateTime? CanceledAt { get; private set; }
 
+    public Order SetClient(Client client)
+    {
+      SetUpdatedAt();
+
+      ClientId = client.Id;
+      Client = client;
+
+      AddNotifications(client);
+      return this;
+    }
+
+    public Order SetClientId(Guid clientId)
+    {
+      SetUpdatedAt();
+
+      ClientId = clientId;
+      return this;
+    }
+
+    public Order SetProduct(Product product)
+    {
+      SetUpdatedAt();
+
+      ProductId = product.Id;
+      Product = product;
+
+      AddNotifications(product);
+      return this;
+    }
+
+    public Order SetProductId(Guid productId)
+    {
+      SetUpdatedAt();
+
+      ProductId = productId;
+      return this;
+    }
     public Order UpdateAmount(int amount)
     {
       SetUpdatedAt();
